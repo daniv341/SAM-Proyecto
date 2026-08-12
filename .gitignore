@@ -1,0 +1,124 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Compilados y binarios
+*.so
+
+# ==========================
+# Entornos virtuales
+# ==========================
+venv/
+.venv/
+env/
+ENV/
+
+# ==========================
+# Variables de entorno
+# ==========================
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Cachés de herramientas
+# ==========================
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.coverage
+htmlcov/
+
+# ==========================
+# IDEs y editores
+# ==========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================
+# Logs
+# ==========================
+*.log
+logs/
+
+# ==========================
+# Jupyter
+# ==========================
+.ipynb_checkpoints/
+
+# ==========================
+# Distribución y empaquetado
+# ==========================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==========================
+# Alembic
+# ==========================
+# Si quieres versionar las migraciones, NO ignores versions/
+# alembic/versions/
+
+# Archivos temporales
+alembic/__pycache__/
+
+# ==========================
+# Bases de datos locales
+# ==========================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================
+# Archivos del sistema
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Archivos de testing
+# ==========================
+.cache/
+nosetests.xml
+coverage.xml
+
+# ==========================
+# PyCharm
+# ==========================
+.idea/
+
+# ==========================
+# VS Code
+# ==========================
+.vscode/
+
+# ==========================
+# Archivos de configuración local
+# ==========================
+*.local
+
+# ==========================
+# Archivos temporales
+# ==========================
+tmp/
+temp/
+*.tmp
+
+# ==========================
+# Docker (opcional)
+# ==========================
+docker-compose.override.yml
+
+# ==========================
+# Secretos y claves
+# ==========================
+*.pem
+*.key
+*.crt

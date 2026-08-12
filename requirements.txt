@@ -1,0 +1,28 @@
+# ── Framework web ─────────────────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.32.0       # Servidor ASGI con soporte WebSocket
+
+# ── Base de datos ──────────────────────────────────────────────────────────────
+sqlmodel==0.0.22                # ORM que combina SQLAlchemy + Pydantic
+asyncpg==0.30.0                 # Driver async para PostgreSQL
+#psycopg2-binary==2.9.12
+alembic==1.14.0                 # Migraciones de base de datos
+
+# ── Validación y configuración ─────────────────────────────────────────────────
+pydantic==2.10.0                # Validación de datos y serialización
+pydantic-settings==2.6.0        # Lectura de variables de entorno (.env)
+email-validator==2.3.0         # Validación de emails
+
+# ── Autenticacion, Hashing y Oauth ─────────────────────────────────────────────────
+python-jose==3.5.0             # JWT para autenticación
+httpx==0.28.0                  # Cliente HTTP para autenticación externa
+bcrypt==5.0.0                  # Algoritmo de hashing bcrypt
+
+# ── IDs únicos ─────────────────────────────────────────────────────────────────
+python-ulid==3.0.0              # Genera IDs ordenables cronológicamente
+
+# ── Testing ────────────────────────────────────────────────────────────────────
+pytest==8.3.0
+pytest-asyncio==0.24.0          # Soporte para tests async
+httpx==0.28.0                   # Cliente HTTP para tests de endpoints
+pytest-cov==6.0.0               # Reporte de cobertura de tests
