@@ -28,16 +28,16 @@ class GetUserUseCase:
 
         user_dtos = [
             UserResponseDTO(
-                id=item.id,
-                name=item.name,
-                date_of_birth=item.date_of_birth,
-                status=item.status,
-                bio=item.bio,
-                image_url=item.image_url,
-                created_at=item.created_at,
-                updated_at=item.updated_at,
+                id=u.id,
+                name=u.name,
+                date_of_birth=u.date_of_birth,
+                status=u.status,
+                bio=u.bio,
+                image_url=u.image_url,
+                created_at=u.created_at,
+                updated_at=u.updated_at,
             )
-            for item in users
+            for u in users
         ]
 
         return UserListResponseDTO(

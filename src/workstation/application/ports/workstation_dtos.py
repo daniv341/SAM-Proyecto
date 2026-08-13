@@ -10,6 +10,7 @@ from src.workstation.domain.workstation_validate import Description
 class CreateWorkstationDTO(BaseModel):
     user: str
     description: str | None = None
+    type: Type
     area: Area
 
     @field_validator("description")

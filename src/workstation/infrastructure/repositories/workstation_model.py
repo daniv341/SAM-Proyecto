@@ -16,7 +16,7 @@ class WorkstationModel(SQLModel, table=True):
     __tablename__ = "workstations"
 
     id: str = Field(primary_key=True)
-    user: str = Field(foreign_key="users.id", unique=True, index=True)
+    user: str = Field(foreign_key="users.id", index=True)
     description: Optional[str] = Field(max_length=100, index=True)
     status: WorkstationStatus = Field(default=WorkstationStatus.ACTIVE)
     type: Type = Field(default=Type.DESKTOP, index=True)

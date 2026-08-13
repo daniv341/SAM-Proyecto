@@ -23,6 +23,7 @@ class CreateWorkstationUseCase:
             id=str(ULID()),
             user=dto.user,
             description=dto.description,
+            type=dto.type,
             area=dto.area,
         )
 
