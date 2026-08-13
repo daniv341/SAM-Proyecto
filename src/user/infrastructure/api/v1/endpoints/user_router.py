@@ -7,32 +7,64 @@ from src.user.application.ports.user_dtos import (
     UpdateUserDTO,
     UserResponseDTO,
     UserListResponseDTO,
+    LoginDTO,
+    TokenResponseDTO
 )
 from src.user.application.use_cases.create_user import CreateUserUseCase
 from src.user.application.use_cases.get_user import GetUserUseCase
 from src.user.application.use_cases.update_user import UpdateUserUseCase
 from src.user.application.use_cases.delete_user import DeleteUserUseCase
+from src.user.application.use_cases.login_user import LoginUserUseCase
+from src.user.application.use_cases.logout_user import LogoutUserUseCase
 from src.user.infrastructure.api.v1.dependencies import (
     get_create_user_use_case,
     get_get_user_use_case,
     get_update_user_use_case,
     get_delete_user_use_case,
+    get_login_use_case,
+    get_logout_use_case
 )
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
+# AUTH
 @router.post(
-    "/",
+    "/auth/register",
     response_model=UserResponseDTO,
     status_code=status.HTTP_201_CREATED,
-    summary="Crear un nuevo user",
+    summary="Crear/Registrar un nuevo user",
 )
-async def create_user(
+async def register(
     dto: CreateUserDTO,
     use_case: Annotated[CreateUserUseCase, Depends(get_create_user_use_case)],
 ) -> UserResponseDTO:
     return await use_case.execute(dto)
+
+
+@router.post(
+    "/auth/login", 
+    response_model=TokenResponseDTO,
+    status_code=status.HTTP_201_CREATED,
+    summary="Iniciar sesión del user"
+)
+async def login(
+    dto: LoginDTO, 
+    use_case: Annotated[LoginUserUseCase, Depends(get_login_use_case)]
+) -> TokenResponseDTO:
+    return await use_case.execute(dto)
+
+
+@router.post(
+    "/auth/logout", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Cerrar sesión del user"
+)
+async def logout(
+    token: str,
+    use_case: Annotated[LogoutUserUseCase, Depends(get_logout_use_case)]
+) -> None:
+    return await use_case.execute(token)
 
 
 @router.get(

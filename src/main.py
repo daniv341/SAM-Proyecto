@@ -23,6 +23,7 @@ from src.shared.exceptions.handlers import (
 from src.user.infrastructure.api.v1.endpoints.user_router import router as user_router
 from src.workstation.infrastructure.api.v1.endpoints.workstation_router import router as workstation_router
 from src.vulnerabilitie.infrastructure.api.v1.endpoints.vulnerabilitie_router import router as vulnerabilitie_router
+from src.log.infrastructure.api.v1.endpoints.log_router import router as log_router
 
 
 
@@ -63,6 +64,7 @@ API_PREFIX = "/api/v1"
 app.include_router(user_router, prefix=API_PREFIX)
 app.include_router(workstation_router, prefix=API_PREFIX)
 app.include_router(vulnerabilitie_router, prefix=API_PREFIX)
+app.include_router(log_router, prefix=API_PREFIX)
 
 # sirve para ver que todo este bien jeje
 @app.get("/ok", tags=["OK"])

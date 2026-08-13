@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from src.user.domain.user import User, UserStatus
 from src.shared.exceptions.domain_exceptions import InvalidValueException
-from src.user.domain.user_validate import Name
+from src.user.domain.user_validate import Name, Email, Password
 
 def make_user(**overrides) -> User:
     """Factory con valores válidos por defecto para tests."""
@@ -33,6 +33,32 @@ class TestName:
     def test_valid_username(self):
         name = Name("Toad18")
         assert name.value == "Toad18"
+
+class TestEmail:
+    def test_invalid_email(self):
+        with pytest.raises(InvalidValueException):
+            Email("abc")
+
+    def test_valid_email(self):
+        email = Email("prueba@gmail.com")
+        assert email.value == "prueba@gmail.com"
+
+class TestPassword:
+    def test_password_without_uppercase(self):
+        with pytest.raises(InvalidValueException):
+            Password("password123")
+
+    def test_password_without_lowercase(self):
+        with pytest.raises(InvalidValueException):
+            Password("PASSWORD123")
+
+    def test_password_without_number(self):
+        with pytest.raises(InvalidValueException):
+            Password("Password")
+
+    def test_valid_password(self):
+        password = Password("Password123")
+        assert password.value == "Password123"
 
 class TestStatus:
     def test_ban_user(self):

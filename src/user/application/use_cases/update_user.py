@@ -1,3 +1,4 @@
+from src.shared.config.security import hash_password
 from src.user.application.ports.user_dtos import UpdateUserDTO, UserResponseDTO
 from src.user.domain.user_repository import UserRepository
 from src.shared.exceptions.domain_exceptions import EntityNotFoundException
@@ -12,8 +13,8 @@ class UpdateUserUseCase:
         if not user:
             raise EntityNotFoundException("User", user_id)
 
-        if dto.name is not None:
-            user.name = dto.name
+        if dto.password is not None:
+            user.name = hash_password(dto.password)
         if dto.status is not None:
             user.banned_changed_to_suspended(dto.status)
             user.status = dto.status
@@ -28,6 +29,7 @@ class UpdateUserUseCase:
         return UserResponseDTO(
             id=updated.id,
             name=updated.name,
+            email=updated.email,
             date_of_birth=updated.date_of_birth,
             status=updated.status,
             bio=updated.bio,

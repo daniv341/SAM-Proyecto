@@ -909,8 +909,6 @@ class TestGetAll{plural_title}:
             assert field in {obj}
 
 
-# ─── Obtener por ID ───────────────────────────────────────────────────────────
-
 class TestGet{pascal}ById:
     # prueba el endpoint de get si devuelve lo que fue creado por created_{obj} con su respectivo id
     def test_get_{obj}_by_id_success(self, created_{obj}, client):

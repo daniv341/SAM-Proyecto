@@ -4,7 +4,7 @@ from enum import Enum
 
 from src.shared.exceptions.domain_exceptions import InvalidValueException
 
-from src.user.domain.user_validate import Name
+from src.user.domain.user_validate import Name, Email, Password
 
 
 class UserStatus(str, Enum):
@@ -22,6 +22,8 @@ class User:
     """
     id: str
     name: str
+    email: str
+    password: str
     date_of_birth: datetime
     status: UserStatus = UserStatus.ACTIVE
     bio: str | None = None
@@ -31,6 +33,8 @@ class User:
 
     def __post_init__(self):
         self.name = Name(self.name).value
+        self.email = Email(self.email).value
+        self.password = Password(self.password).value
 
     def banned_changed_to_suspended(self, new_status: UserStatus):
         if (self.status == UserStatus.BANNED

@@ -15,6 +15,7 @@ class GetUserUseCase:
         return UserResponseDTO(
             id=user.id,
             name=user.name,
+            email=user.email,
             date_of_birth=user.date_of_birth,
             status=user.status,
             bio=user.bio,
@@ -30,6 +31,7 @@ class GetUserUseCase:
             UserResponseDTO(
                 id=u.id,
                 name=u.name,
+                email=u.email,
                 date_of_birth=u.date_of_birth,
                 status=u.status,
                 bio=u.bio,

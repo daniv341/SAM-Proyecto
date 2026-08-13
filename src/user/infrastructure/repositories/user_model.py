@@ -17,6 +17,8 @@ class UserModel(SQLModel, table=True):
 
     id: str = Field(primary_key=True)
     name: str = Field(max_length=100, index=True)
+    email: str = Field(unique=True, index=True, max_length=255)
+    password: str = Field(max_length=255)
     date_of_birth: datetime = Field(
         sa_column=Column(DateTime(timezone=True), nullable=False)
     )

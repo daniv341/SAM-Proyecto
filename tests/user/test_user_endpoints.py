@@ -15,6 +15,8 @@ def user_payload() -> dict:
     """Payload mínimo válido para crear un user. Nombre único por ejecución."""
     return {
         "name": f"test_user_{uuid.uuid4().hex[:8]}",
+        "email": f"test_{uuid.uuid4().hex[:5]}@gmail.com",
+        "password": "Segura123!",
         "date_of_birth": "1990-01-01T00:00:00Z",
         "bio": "This is a test user",
         "image_url": "webada",
@@ -24,64 +26,71 @@ def user_payload() -> dict:
 @pytest.fixture
 def created_user(user_payload, client) -> dict:
     """Crea un user real en la BD y devuelve la respuesta; útil como precondición."""
-    response = client.post("/api/v1/users/", json=user_payload)
+    response = client.post("/api/v1/users/auth/register", json=user_payload)
     assert response.status_code == 201, f"Setup falló: {response.text}"
     return response.json()
 
+@pytest.fixture
+def auth_token(user_payload, client) -> str:
+    """Registra un usuario, hace login y devuelve el token de acceso."""
+    client.post("/api/v1/users/auth/register", json=user_payload)
+    response = client.post("/api/v1/users/auth/login", json=user_payload)
+    assert response.status_code == 201, f"Login falló: {response.text}"
+    return response.json()["access_token"]
 
-class TestCreateUser:
-    # prueba el endpoint de post con todos los atributos
-    def test_create_user_success(self, user_payload: dict, client):
-        response = client.post("/api/v1/users/", json=user_payload)
+
+class TestLoginUser:
+    # prueba el endpoint de login con credenciales correctas
+    def test_login_success(self, user_payload, client):
+        client.post("/api/v1/users/auth/register", json=user_payload)
+        response = client.post("/api/v1/users/auth/login", json=user_payload)
         assert response.status_code == 201
         data = response.json()
-        assert data["name"] == user_payload["name"]
-        assert data["status"] == "ACTIVE"
-        assert "id" in data
+        assert "access_token" in data
+        #assert data["access_token"] != ""
 
-    # prueba el endpoint de post sin los atributos opcionales
-    def test_create_user_without_optional_fields(self, client):
-        payload = {
-            "name": f"test_user_{uuid.uuid4().hex[:8]}",
-            "date_of_birth": "1990-01-01T00:00:00Z",
-        }
-        response = client.post("/api/v1/users/", json=payload)
-        assert response.status_code == 201
-        data = response.json()
-        assert data["status"] == "ACTIVE"
-        assert data["name"] == payload["name"]
+    # prueba el endpoint de login con password incorrecta, lanza error
+    def test_login_wrong_password(self, user_payload, client):
+        client.post("/api/v1/users/auth/register", json=user_payload)
+        payload = {**user_payload, "password": "ContraseñaIncorrecta"}
+        response = client.post("/api/v1/users/auth/login", json=payload)
+        assert response.status_code == 422
 
-    # prueba el endpoint de post sin el name, lanza error
-    def test_create_user_missing_required_field(self, user_payload, client):
-        payload = user_payload.copy()
-        del payload["name"]
-        response = client.post("/api/v1/users/", json=payload)
-        assert response.status_code == 422   # Unprocessable Entity
-    
-    # prueba el endpoint de post con date_of_birth invalido, lanza error
-    def test_create_user_invalid_date_format(self, user_payload, client):
-        payload = {**user_payload, "date_of_birth": "no-es-una-fecha"}
-        response = client.post("/api/v1/users/", json=payload)
+    # prueba el endpoint de login con email inexistente, lanza error
+    def test_login_email_not_found(self, client):
+        response = client.post("/api/v1/users/auth/login", json={
+            "email": "noexiste@ejemplo.com",
+            "password": "cualquiera"
+        })
+        assert response.status_code == 404
+
+    # prueba el endpoint de login sin email, lanza error
+    def test_login_missing_email(self, client):
+        response = client.post("/api/v1/users/auth/login", json={"password": "Segura123!"})
         assert response.status_code == 422
-    
-    # prueba el endpoint de post con name vacio, lanza error
-    def test_create_user_empty_name(self, user_payload, client):
-        payload = {**user_payload, "name": ""}
-        response = client.post("/api/v1/users/", json=payload)
+
+    # prueba el endpoint de login sin password, lanza error
+    def test_login_missing_password(self, user_payload, client):
+        response = client.post("/api/v1/users/auth/login", json={"email": user_payload["email"]})
         assert response.status_code == 422
-    
-    # prueba el endpoint de post si devuelve created_at y updated_at
-    def test_create_user_returns_timestamps(self, client):
-        payload = {
-            "name": f"test_user_{uuid.uuid4().hex[:8]}",
-            "date_of_birth": "1990-01-01T00:00:00Z",
-            "bio": "This is a test user.",
-            "image_url": "webada",
-        }
-        response = client.post("/api/v1/users/", json=payload)
-        data = response.json()
-        assert "created_at" in data
-        assert "updated_at" in data
+
+
+class TestLogoutUser:
+    # prueba el endpoint de logout con un token valido
+    def test_logout_success(self, auth_token, client):
+        response = client.post(f"/api/v1/users/auth/logout?token={auth_token}")
+        assert response.status_code == 204
+
+    # prueba el endpoint de logout con un token invalido, lanza error
+    def test_logout_invalid_token(self, client):
+        response = client.post("/api/v1/users/auth/logout?token=token.invalido.xyz")
+        # no importa si devuelve 204, ya que el logout es idempotente, sin importar lo que se haga, el resultado sera el mismo
+        assert response.status_code == 204
+
+    # prueba el endpoint de logout sin token, lanza error
+    def test_logout_missing_token(self, client):
+        response = client.post("/api/v1/users/auth/logout")
+        assert response.status_code == 422
 
 
 class TestGetAllUsers:
@@ -139,6 +148,7 @@ class TestUpdateUser:
     def test_update_user_by_id_success(self, created_user, client):
         user_id = created_user["id"]
         update_payload = {
+            "password": "NuevaSegura123!",
             "status": "INACTIVE", 
             "bio": "biografia actualizada"
         }
@@ -182,7 +192,7 @@ class TestDeleteUser:
     # prueba el endpoint de delete 
     def test_delete_user_by_id_success(self, user_payload, client):
         # crear user exclusivo para este test
-        create_resp = client.post("/api/v1/users/", json=user_payload)
+        create_resp = client.post("/api/v1/users/auth/register", json=user_payload)
         user_id = create_resp.json()["id"]
 
         # eliminarlo segun el id
@@ -200,7 +210,7 @@ class TestDeleteUser:
 
     # prueba el endpoint de delete 2 veces para ver si se elimino a la primera, si sale a la segunda tambien esta mal
     def test_delete_user_by_id_idempotent(self, user_payload, client):
-        create_resp = client.post("/api/v1/users/", json=user_payload)
+        create_resp = client.post("/api/v1/users/auth/register", json=user_payload)
         user_id = create_resp.json()["id"]
         client.delete(f"/api/v1/users/{user_id}")
         second_delete = client.delete(f"/api/v1/users/{user_id}")

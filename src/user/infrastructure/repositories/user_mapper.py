@@ -10,6 +10,8 @@ class UserMapper:
         return User(
             id=model.id,
             name=model.name,
+            email=model.email,
+            password=model.password,
             date_of_birth=model.date_of_birth,
             status=model.status,
             bio=model.bio,
@@ -23,6 +25,8 @@ class UserMapper:
         return UserModel(
             id=user.id,
             name=user.name,
+            email=user.email,
+            password=user.password,
             date_of_birth=user.date_of_birth,
             status=user.status,
             bio=user.bio,

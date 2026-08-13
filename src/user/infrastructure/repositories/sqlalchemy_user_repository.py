@@ -30,6 +30,13 @@ class SQLAlchemyUserRepository(UserRepository):
         model = result.scalar_one_or_none()
         return UserMapper.to_domain(model) if model else None
 
+    async def find_by_email(self, user_email: str) -> User | None:
+            result = await self._session.execute(
+                select(UserModel).where(UserModel.email == user_email)
+            )
+            model = result.scalar_one_or_none()
+            return UserMapper.to_domain(model) if model else None
+
     async def find_all(self, skip: int = 0, limit: int = 20) -> list[User]:
         result = await self._session.execute(
             select(UserModel).offset(skip).limit(limit)
@@ -45,7 +52,7 @@ class SQLAlchemyUserRepository(UserRepository):
         if not model:
             raise ValueError(f"UserModel con id \"{user.id}\" no encontrado.")
 
-        model.name = user.name
+        model.password = user.password
         model.status = user.status
         model.bio = user.bio
         model.image_url = user.image_url
