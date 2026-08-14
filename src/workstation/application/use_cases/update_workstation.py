@@ -1,3 +1,5 @@
+from ulid import ULID
+
 from src.workstation.application.ports.workstation_dtos import UpdateWorkstationDTO, WorkstationResponseDTO
 from src.workstation.domain.workstation_repository import WorkstationRepository
 from src.shared.exceptions.domain_exceptions import EntityNotFoundException
@@ -8,10 +10,14 @@ from src.user.application.ports.user_dtos import UserResponseShort
 
 from src.workstation.application.services.workstation_validator import _to_update_workstation_validator
 
+from src.log.domain.log import Log
+from src.log.domain.log_repository import LogRepository
+
 class UpdateWorkstationUseCase:
-    def __init__(self, workstation_repository: WorkstationRepository, user_repository: UserRepository):
+    def __init__(self, workstation_repository: WorkstationRepository, user_repository: UserRepository, log_repository: LogRepository):
         self._repo = workstation_repository
         self._repo_user = user_repository
+        self._repo_log = log_repository
 
     async def execute(self, workstation_id: str, dto: UpdateWorkstationDTO) -> WorkstationResponseDTO:
         workstation = await self._repo.find_by_id(workstation_id)
@@ -39,6 +45,16 @@ class UpdateWorkstationUseCase:
         updated = await self._repo.update(workstation)
 
         user = await self._repo_user.find_by_id(updated.user)
+
+        log = Log(
+            id=str(ULID()),
+            action="UPDATE",
+            entity_type="WORKSTATION",
+            entity_id=workstation.id,
+            description=f"Workstation {workstation.type} from User {workstation.user} updated"
+        )
+        # llamas a save del repositorio de log
+        await self._repo_log.save(log)
 
         return WorkstationResponseDTO(
             id=updated.id,

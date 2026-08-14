@@ -33,20 +33,20 @@ def get_create_user_use_case(repo: UserRepoDep, repo_log: LogRepoDep) -> CreateU
 
 
 # obtiene el repositorio de usuarios y retorna una instancia de LoginUserUseCase
-def get_login_use_case(repo=Depends(get_user_repository)):
-    return LoginUserUseCase(repo)
-
+def get_login_use_case(repo: UserRepoDep, repo_log: LogRepoDep):
+    return LoginUserUseCase(repo, repo_log)
+#repo=Depends(get_user_repository)
 
 def get_logout_use_case():
     return LogoutUserUseCase()
 
-def get_get_user_use_case(repo: UserRepoDep) -> GetUserUseCase:
-    return GetUserUseCase(repo)
+def get_get_user_use_case(repo: UserRepoDep, repo_log: LogRepoDep) -> GetUserUseCase:
+    return GetUserUseCase(repo, repo_log)
 
 
-def get_update_user_use_case(repo: UserRepoDep) -> UpdateUserUseCase:
-    return UpdateUserUseCase(repo)
+def get_update_user_use_case(repo: UserRepoDep, repo_log: LogRepoDep) -> UpdateUserUseCase:
+    return UpdateUserUseCase(repo, repo_log)
 
 
-def get_delete_user_use_case(repo: UserRepoDep) -> DeleteUserUseCase:
-    return DeleteUserUseCase(repo)
+def get_delete_user_use_case(repo: UserRepoDep, repo_log: LogRepoDep) -> DeleteUserUseCase:
+    return DeleteUserUseCase(repo, repo_log)

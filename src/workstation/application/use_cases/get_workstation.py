@@ -1,3 +1,5 @@
+from ulid import ULID
+
 from src.workstation.application.ports.workstation_dtos import WorkstationResponseDTO, WorkstationListResponseDTO
 from src.workstation.domain.workstation_repository import WorkstationRepository
 from src.shared.exceptions.domain_exceptions import EntityNotFoundException
@@ -8,10 +10,14 @@ from src.user.application.ports.user_dtos import UserResponseShort
 
 from src.workstation.application.services.workstation_validator import _to_workstation_validator, _to_workstation_response
 
+from src.log.domain.log import Log
+from src.log.domain.log_repository import LogRepository
+
 class GetWorkstationUseCase:
-    def __init__(self, workstation_repository: WorkstationRepository, user_repository: UserRepository):
+    def __init__(self, workstation_repository: WorkstationRepository, user_repository: UserRepository, log_repository: LogRepository):
         self._repo = workstation_repository
         self._repo_user = user_repository
+        self._repo_log = log_repository
 
     async def execute_by_id(self, workstation_id: str) -> WorkstationResponseDTO:
         workstation = await self._repo.find_by_id(workstation_id)
@@ -19,6 +25,16 @@ class GetWorkstationUseCase:
             raise EntityNotFoundException("Workstation", workstation_id)
 
         user = await _to_workstation_validator(workstation, self._repo_user)
+
+        log = Log(
+            id=str(ULID()),
+            action="CREATE",
+            entity_type="WORKSTATION",
+            entity_id=workstation.id,
+            description=f"Workstation {workstation.type} from User {workstation.user} get"
+        )
+        # llamas a save del repositorio de log
+        await self._repo_log.save(log)
 
         return WorkstationResponseDTO(
             id=workstation.id,
@@ -41,6 +57,16 @@ class GetWorkstationUseCase:
             await _to_workstation_response(w, self._repo_user)
             for w in workstations
         ]
+
+        log = Log(
+            id=str(ULID()),
+            action="GETALL",
+            entity_type="WORKSTATION",
+            entity_id="None",
+            description=f"Get All ejecuted"
+        )
+        # llamas a save del repositorio de log
+        await self._repo_log.save(log) 
 
         return WorkstationListResponseDTO(
             workstations=workstation_dtos,

@@ -27,3 +27,11 @@ class LogListResponseDTO(BaseModel):
     total: int
     skip: int
     limit: int
+
+# dto para los filtros en el get all
+class LogFiltersDTO(BaseModel):
+    action: AuditAction | None = None
+    entity_type: EntityType | None = None
+    entity_id: str | None = None
+    created_at: datetime | None = None
+

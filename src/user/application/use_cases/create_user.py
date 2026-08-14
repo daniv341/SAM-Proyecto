@@ -39,6 +39,7 @@ class CreateUserUseCase:
             entity_type="USER",
             entity_id=saved.id,
             description=f"User {saved.name} with Email {saved.email} created",
+            created_at=saved.created_at
         )
         # llamas a save del repositorio de log
         await self._repo_log.save(log)
