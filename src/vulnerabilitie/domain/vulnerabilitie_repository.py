@@ -33,3 +33,8 @@ class VulnerabilitieRepository(ABC):
     async def delete(self, vulnerabilitie_id: str) -> None:
         """Elimina un vulnerabilitie por su ID."""
         ...
+
+    @abstractmethod
+    async def find_workstations(self, vulnerabilitie_id: str) -> list[str]:
+        """Devuelve una lista de workstations asociadas a una vulnerabilitie."""
+        ...

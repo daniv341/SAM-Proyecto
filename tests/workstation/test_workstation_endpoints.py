@@ -17,6 +17,9 @@ USERS_IDS = [
 "01M015YGT8YAR8RYHTN9JXR16P",
 "01M015YHFKM60ZW27EXSW6808D",
 "01M015YJ4D5QQ1KP8V9EA37SXQ",
+"01M017W7SM8WGEDAP9PJ3SQZRB",
+"01M017W8FQ0HCKSJVA88SDJSV3",
+"01M017W98PJH1PCBD4VS2SJNZW"
 ]
 
 def random_users_id() -> str:
@@ -119,8 +122,19 @@ class TestGetAllWorkstations:
         for field in ("id", "status", "type"):
             assert field in workstation
 
-
-# ─── Obtener por ID ───────────────────────────────────────────────────────────
+    def test_get_all_filtering_fields(self, client):
+        params = {
+            "status": "ACTIVE",
+            "type": "DESKTOP",
+        }
+        response =  client.get("/api/v1/workstations/", params=params)
+        print(response.status_code)
+        print(response.json())
+        fields = response.json()["workstations"]
+        assert len(fields) > 0
+        for field in fields:
+            assert field["status"] == "ACTIVE"
+            assert field["type"] == "DESKTOP"
 
 class TestGetWorkstationById:
     # prueba el endpoint de get si devuelve lo que fue creado por created_workstation con su respectivo id
@@ -148,13 +162,13 @@ class TestUpdateWorkstation:
         workstation_id = created_workstation["id"]
         update_payload = {
             "user": random_users_id(),
-            "status": "INACTIVE", 
+            "status": "BANNED", 
             "description": "description actualizada"
         }
         response = client.patch(f"/api/v1/workstations/{workstation_id}", json=update_payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "INACTIVE"
+        assert data["status"] == "BANNED"
         assert data["description"] == "description actualizada"
 
     # prueba el endpoint de patch para actualizar un workstation con id inexistente, lanza error

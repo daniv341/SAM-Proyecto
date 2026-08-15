@@ -45,6 +45,13 @@ class VulnerabilitieResponseDTO(BaseModel):
 
     model_config = {"from_attributes": True}
 
+class VulnerabilitieResponseShortDTO(BaseModel):
+    id: str
+    cve: str
+    severity: Severity
+    mitigation: bool
+
+    model_config = {"from_attributes": True}
 
 class VulnerabilitieListResponseDTO(BaseModel):
     vulnerabilities: list[VulnerabilitieResponseDTO]

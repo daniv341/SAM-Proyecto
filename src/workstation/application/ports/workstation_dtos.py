@@ -45,8 +45,25 @@ class WorkstationResponseDTO(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class WorkstationResponseShortDTO(BaseModel):
+    id: str
+    user: str
+    type: Type
+
+    model_config = {"from_attributes": True}
+
+
 class WorkstationListResponseDTO(BaseModel):
     workstations: list[WorkstationResponseDTO]
     total: int
     skip: int
     limit: int
+
+
+# dto para los filtros en el get all
+class WorkstationFilterDTO(BaseModel):
+    user: str | None = None
+    status: WorkstationStatus | None = None
+    type: Type | None = None
+    area: Area | None = None
+    created_at: datetime | None = None

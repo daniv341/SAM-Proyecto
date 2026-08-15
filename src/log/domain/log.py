@@ -9,10 +9,12 @@ from src.shared.exceptions.domain_exceptions import InvalidValueException
 class AuditAction(str, Enum):
     CREATE = "CREATE"
     GET = "GET"
+    GETALL = "GETALL"
     UPDATE = "UPDATE"
     DELETE = "DELETE"
     LOGIN = "LOGIN"
     LOGOUT = "LOGOUT"
+    ALERT = "ALERT"
 
 class EntityType(str, Enum):
     USER = "USER"

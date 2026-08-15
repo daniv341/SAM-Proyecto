@@ -33,3 +33,19 @@ class WorkstationRepository(ABC):
     async def delete(self, workstation_id: str) -> None:
         """Elimina un workstation por su ID."""
         ...
+
+# metodos para manejar la relacion many to many entre workstation y vulnerabilidades
+    @abstractmethod
+    async def add_vulnerability(self, workstation_id: str, vulnerability_id: str) -> None:
+        """Añade una vulnerabilidad a un workstation."""
+        ...
+
+    @abstractmethod
+    async def remove_vulnerability(self, workstation_id: str, vulnerability_id: str) -> None:
+        """Elimina una vulnerabilidad de un workstation."""
+        ...
+
+    @abstractmethod
+    async def find_vulnerabilities(self, workstation_id: str) -> list[str]:
+        """Devuelve una lista de vulnerabilities asociadas a un workstation."""
+        ...

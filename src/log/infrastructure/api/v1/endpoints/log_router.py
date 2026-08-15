@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from src.log.application.ports.log_dtos import (
-    CreateLogDTO,
     LogResponseDTO,
     LogListResponseDTO,
     LogFiltersDTO

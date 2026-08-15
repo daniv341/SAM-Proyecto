@@ -12,12 +12,16 @@ from src.vulnerabilitie.application.use_cases.create_vulnerabilitie import Creat
 from src.vulnerabilitie.application.use_cases.get_vulnerabilitie import GetVulnerabilitieUseCase
 from src.vulnerabilitie.application.use_cases.update_vulnerabilitie import UpdateVulnerabilitieUseCase
 from src.vulnerabilitie.application.use_cases.delete_vulnerabilitie import DeleteVulnerabilitieUseCase
+from src.vulnerabilitie.application.use_cases.get_vulnerabilitie_workstation import GetVulnerabilitieWorkstationsUseCase
 from src.vulnerabilitie.infrastructure.api.v1.dependencies import (
     get_create_vulnerabilitie_use_case,
     get_get_vulnerabilitie_use_case,
     get_update_vulnerabilitie_use_case,
     get_delete_vulnerabilitie_use_case,
+    get_get_vulnerabilitie_workstations_use_case
 )
+
+from src.workstation.application.ports.workstation_dtos import WorkstationResponseShortDTO
 
 router = APIRouter(prefix="/vulnerabilities", tags=["Vulnerabilities"])
 
@@ -83,3 +87,15 @@ async def delete_vulnerabilitie(
     use_case: Annotated[DeleteVulnerabilitieUseCase, Depends(get_delete_vulnerabilitie_use_case)],
 ) -> None:
     await use_case.execute(vulnerabilitie_id)
+
+
+@router.get(
+    "/{vulnerabilitie_id}/workstations",
+    response_model=list[WorkstationResponseShortDTO],
+    summary="Listar todos los workstations asociadas a la vulnerabilitie",
+)
+async def get_vulnerabilitie_workstations(
+    vulnerabilitie_id: str,
+    use_case: Annotated[GetVulnerabilitieWorkstationsUseCase, Depends(get_get_vulnerabilitie_workstations_use_case)],
+):
+    return await use_case.execute(vulnerabilitie_id)

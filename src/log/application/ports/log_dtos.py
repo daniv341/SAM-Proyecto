@@ -28,6 +28,7 @@ class LogListResponseDTO(BaseModel):
     skip: int
     limit: int
 
+
 # dto para los filtros en el get all
 class LogFiltersDTO(BaseModel):
     action: AuditAction | None = None

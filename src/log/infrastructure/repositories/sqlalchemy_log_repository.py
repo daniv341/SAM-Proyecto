@@ -46,9 +46,9 @@ class SQLAlchemyLogRepository(LogRepository):
             if filters.created_at:
                 statement = statement.where(LogModel.created_at >= filters.created_at)
 
+        #esto ordena los logs en orden descendente segun la fecha de creacion
+        statement = statement.order_by(LogModel.created_at.desc())
 
-        result = await self._session.execute(
-            statement.offset(skip).limit(limit)
-        )
+        result = await self._session.execute(statement.offset(skip).limit(limit))
         models = result.scalars().all()
         return [LogMapper.to_domain(m) for m in models]

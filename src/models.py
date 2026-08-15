@@ -13,7 +13,7 @@ from src.user.infrastructure.repositories.user_model import UserModel           
 from src.workstation.infrastructure.repositories.workstation_model import WorkstationModel  # noqa: F401
 from src.vulnerabilitie.infrastructure.repositories.vulnerabilitie_model import VulnerabilitieModel  # noqa: F401
 from src.log.infrastructure.repositories.log_model import LogModel  # noqa: F401
-
+from src.workstation.infrastructure.repositories.vulnerabilitie_workstation_model import VulnerabilityWorkstationModel
 # Próximas entidades (descomentá cuando las crees):
 # from src.tournament.infrastructure.repositories.tournament_model import TournamentModel  # noqa: F401
 # from src.match.infrastructure.repositories.match_model import MatchModel                 # noqa: F401

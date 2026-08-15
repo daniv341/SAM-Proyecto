@@ -55,11 +55,23 @@ class TestGetAllLogs:
     def test_get_all_log_fields(self, created_user, client):
         response = client.get("/api/v1/logs/")
         logs = response.json()["logs"]
-        print(response.json())
         log = next((p for p in logs if p["entity_id"] == created_user["id"]), None)
         assert log is not None
         for field in ("action", "entity_type", "description", "created_at"):
             assert field in log
+
+    def test_get_all_filtering_fields(self, client):
+        params = {
+            "action": "CREATE",
+            "entity_type": "USER",
+        }
+        response =  client.get("/api/v1/logs/", params=params)
+        fields = response.json()["logs"]
+        assert len(fields) > 0
+        for field in fields:
+            assert field["action"] == "CREATE"
+            assert field["entity_type"] == "USER"
+        
 
 # clausarado, ya que en ningun momento puedo saber cual fue el id del log que se creo, esto debido a que no se puede crear un log por si solo, se nevesita de una accion previa
 class TestGetLogById:

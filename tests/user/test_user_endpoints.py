@@ -23,12 +23,7 @@ def user_payload() -> dict:
     }
 
 
-@pytest.fixture
-def created_user(user_payload, client) -> dict:
-    """Crea un user real en la BD y devuelve la respuesta; útil como precondición."""
-    response = client.post("/api/v1/users/auth/register", json=user_payload)
-    assert response.status_code == 201, f"Setup falló: {response.text}"
-    return response.json()
+res
 
 @pytest.fixture
 def auth_token(user_payload, client) -> str:

@@ -19,7 +19,7 @@ class LogModel(SQLModel, table=True):
     action: AuditAction = Field(default=AuditAction.CREATE, index=True)
     entity_type: EntityType = Field(default=EntityType.USER, index=True)
     entity_id: str = Field(default=None, max_length=50, index=True)
-    description: str = Field(default=None, max_length=100, index=True)
+    description: str = Field(default=None, max_length=200, index=True)
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(DateTime(timezone=True), nullable=False)

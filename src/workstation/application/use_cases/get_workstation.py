@@ -1,6 +1,6 @@
 from ulid import ULID
 
-from src.workstation.application.ports.workstation_dtos import WorkstationResponseDTO, WorkstationListResponseDTO
+from src.workstation.application.ports.workstation_dtos import WorkstationResponseDTO, WorkstationListResponseDTO, WorkstationFilterDTO
 from src.workstation.domain.workstation_repository import WorkstationRepository
 from src.shared.exceptions.domain_exceptions import EntityNotFoundException
 
@@ -28,7 +28,7 @@ class GetWorkstationUseCase:
 
         log = Log(
             id=str(ULID()),
-            action="CREATE",
+            action="GET",
             entity_type="WORKSTATION",
             entity_id=workstation.id,
             description=f"Workstation {workstation.type} from User {workstation.user} get"
@@ -50,8 +50,8 @@ class GetWorkstationUseCase:
             updated_at=workstation.updated_at,
         )
 
-    async def execute_all(self, skip: int = 0, limit: int = 20) -> WorkstationListResponseDTO:
-        workstations = await self._repo.find_all(skip=skip, limit=limit)
+    async def execute_all(self, filters: WorkstationFilterDTO | None = None, skip: int = 0, limit: int = 20) -> WorkstationListResponseDTO:
+        workstations = await self._repo.find_all(filters, skip=skip, limit=limit)
 
         workstation_dtos = [
             await _to_workstation_response(w, self._repo_user)
