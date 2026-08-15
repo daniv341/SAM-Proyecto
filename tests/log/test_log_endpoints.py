@@ -60,6 +60,7 @@ class TestGetAllLogs:
         for field in ("action", "entity_type", "description", "created_at"):
             assert field in log
 
+    #prueba el endpoint de getall si el filtro funciona segun la busqueda deseada
     def test_get_all_filtering_fields(self, client):
         params = {
             "action": "CREATE",

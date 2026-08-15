@@ -25,7 +25,7 @@ class RemoveVulnerabilityFromWorkstationUseCase:
         if not vulnerability:
             raise EntityNotFoundException("Vulnerability", vulnerability_id)
 
-        await self._repo.remove_vulnerability(workstation_id, vulnerability_id)
+        await self._repo.remove_vulnerabilitie(workstation_id, vulnerability_id)
 
         log = Log(
             id=str(ULID()),

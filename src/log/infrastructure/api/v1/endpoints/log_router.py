@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 from src.log.application.ports.log_dtos import (
     LogResponseDTO,
     LogListResponseDTO,
-    LogFiltersDTO
+    LogFilterDTO
 )
 from src.log.application.use_cases.get_log import GetLogUseCase
 from src.log.infrastructure.api.v1.dependencies import (
@@ -31,7 +31,7 @@ async def list_logs(
     entity_id: str | None = None,
     created_at: datetime | None = None,
 ) -> LogListResponseDTO:
-    filters = LogFiltersDTO( # aqui asignas los valores que ingresaste en el swagger
+    filters = LogFilterDTO( # aqui asignas los valores que ingresaste en el swagger
         action=action,
         entity_type=entity_type,
         entity_id=entity_id,

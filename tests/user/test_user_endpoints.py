@@ -23,7 +23,12 @@ def user_payload() -> dict:
     }
 
 
-res
+@pytest.fixture
+def created_user(user_payload, client) -> dict:
+    """Crea un user real en la BD y devuelve la respuesta; útil como precondición."""
+    response = client.post("/api/v1/users/auth/register", json=user_payload)
+    assert response.status_code == 201, f"Setup falló: {response.text}"
+    return response.json()
 
 @pytest.fixture
 def auth_token(user_payload, client) -> str:
@@ -109,7 +114,6 @@ class TestGetAllUsers:
     def test_get_all_user_fields(self, created_user, client):
         response = client.get("/api/v1/users/")
         users = response.json()["users"]
-        print(response.json())
         user = next((p for p in users if p["id"] == created_user["id"]), None)
         assert user is not None
         for field in ("id", "name", "date_of_birth"):

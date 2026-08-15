@@ -908,6 +908,17 @@ class TestGetAll{plural_title}:
         for field in ("name"):
             assert field in {obj}
 
+    #prueba el endpoint de getall si el filtro funciona segun la busqueda deseada
+    def test_get_all_filtering_fields(self, client):
+        params = {
+            "status": "ACTIVE",
+        }
+        response =  client.get("/api/v1/{plural}/", params=params)
+        fields = response.json()["{plural}"]
+        assert len(fields) > 0
+        for field in fields:
+            assert field["status"] == "ACTIVE"
+
 
 class TestGet{pascal}ById:
     # prueba el endpoint de get si devuelve lo que fue creado por created_{obj} con su respectivo id

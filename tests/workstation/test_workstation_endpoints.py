@@ -44,7 +44,7 @@ def workstation_payload() -> dict:
 
 @pytest.fixture
 def created_workstation(workstation_payload, client) -> dict:
-    """Crea un user real en la BD y devuelve la respuesta; útil como precondición."""
+    """Crea un workstation real en la BD y devuelve la respuesta; útil como precondición."""
     response = client.post("/api/v1/workstations/", json=workstation_payload)
     assert response.status_code == 201, f"Setup falló: {response.text}"
     return response.json()
@@ -122,14 +122,13 @@ class TestGetAllWorkstations:
         for field in ("id", "status", "type"):
             assert field in workstation
 
+    #prueba el endpoint de getall si el filtro funciona segun la busqueda deseada
     def test_get_all_filtering_fields(self, client):
         params = {
             "status": "ACTIVE",
             "type": "DESKTOP",
         }
         response =  client.get("/api/v1/workstations/", params=params)
-        print(response.status_code)
-        print(response.json())
         fields = response.json()["workstations"]
         assert len(fields) > 0
         for field in fields:

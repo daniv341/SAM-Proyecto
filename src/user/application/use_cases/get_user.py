@@ -1,6 +1,6 @@
 from ulid import ULID
 
-from src.user.application.ports.user_dtos import UserResponseDTO, UserListResponseDTO
+from src.user.application.ports.user_dtos import UserResponseDTO, UserListResponseDTO, UserFilterDTO
 from src.user.domain.user_repository import UserRepository
 from src.shared.exceptions.domain_exceptions import EntityNotFoundException
 
@@ -39,8 +39,8 @@ class GetUserUseCase:
             updated_at=user.updated_at,
         )
 
-    async def execute_all(self, skip: int = 0, limit: int = 20) -> UserListResponseDTO:
-        users = await self._repo.find_all(skip=skip, limit=limit)
+    async def execute_all(self, filters: UserFilterDTO | None = None, skip: int = 0, limit: int = 20) -> UserListResponseDTO:
+        users = await self._repo.find_all(filters, skip=skip, limit=limit)
 
         user_dtos = [
             UserResponseDTO(

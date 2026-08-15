@@ -6,7 +6,7 @@ from src.log.domain.log_repository import LogRepository
 from src.log.infrastructure.repositories.log_mapper import LogMapper
 from src.log.infrastructure.repositories.log_model import LogModel
 
-from src.log.application.ports.log_dtos import LogFiltersDTO
+from src.log.application.ports.log_dtos import LogFilterDTO
 
 class SQLAlchemyLogRepository(LogRepository):
     """
@@ -32,7 +32,7 @@ class SQLAlchemyLogRepository(LogRepository):
         return LogMapper.to_domain(model) if model else None
 
     # debes ponerlo en la funcion, None es por si no agregas ningun filtro
-    async def find_all(self, filters: LogFiltersDTO | None = None, skip: int = 0, limit: int = 20) -> list[Log]:
+    async def find_all(self, filters: LogFilterDTO | None = None, skip: int = 0, limit: int = 20) -> list[Log]:
         statement = select(LogModel)
 
         # de esta forma el trabajo lo hace la bd y no el sistema, es para ahorrar rendimiento

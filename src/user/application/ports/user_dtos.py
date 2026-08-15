@@ -67,14 +67,20 @@ class TokenResponseDTO(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
+
 class UserResponseShort(BaseModel):
     id: str
     name: str
 
     model_config = {"from_attributes": True}
 
+
 class UserListResponseDTO(BaseModel):
     users: list[UserResponseDTO]
     total: int
     skip: int
     limit: int
+
+class UserFilterDTO(BaseModel):
+    status: UserStatus | None = None
+    created_at: datetime | None = None

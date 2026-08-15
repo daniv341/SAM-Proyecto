@@ -30,7 +30,7 @@ class LogListResponseDTO(BaseModel):
 
 
 # dto para los filtros en el get all
-class LogFiltersDTO(BaseModel):
+class LogFilterDTO(BaseModel):
     action: AuditAction | None = None
     entity_type: EntityType | None = None
     entity_id: str | None = None

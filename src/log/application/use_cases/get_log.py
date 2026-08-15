@@ -1,4 +1,4 @@
-from src.log.application.ports.log_dtos import LogResponseDTO, LogListResponseDTO, LogFiltersDTO
+from src.log.application.ports.log_dtos import LogResponseDTO, LogListResponseDTO, LogFilterDTO
 from src.log.domain.log_repository import LogRepository
 from src.shared.exceptions.domain_exceptions import EntityNotFoundException
 
@@ -22,7 +22,7 @@ class GetLogUseCase:
         )
 
     # debes ponerlo en la funcion, None es por si no agregas ningun filtro
-    async def execute_all(self, filters: LogFiltersDTO | None = None, skip: int = 0, limit: int = 20) -> LogListResponseDTO:
+    async def execute_all(self, filters: LogFilterDTO | None = None, skip: int = 0, limit: int = 20) -> LogListResponseDTO:
         # los demas parametros que no sean los argumentos claves deben ir primeros
         logs = await self._repo.find_all(filters, skip=skip, limit=limit)
 

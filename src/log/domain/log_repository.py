@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.log.domain.log import Log
-
+from src.log.application.ports.log_dtos import LogFilterDTO
 
 class LogRepository(ABC):
     """
@@ -20,6 +20,6 @@ class LogRepository(ABC):
         ...
 
     @abstractmethod
-    async def find_all(self, skip: int = 0, limit: int = 20) -> list[Log]:
+    async def find_all(self, filters: LogFilterDTO | None = None, skip: int = 0, limit: int = 20) -> list[Log]:
         """Devuelve una lista paginada de logs."""
         ...

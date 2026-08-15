@@ -6,6 +6,7 @@ from src.user.domain.user_repository import UserRepository
 from src.user.infrastructure.repositories.user_mapper import UserMapper
 from src.user.infrastructure.repositories.user_model import UserModel
 
+from src.user.application.ports.user_dtos import UserFilterDTO
 
 class SQLAlchemyUserRepository(UserRepository):
     """
@@ -37,12 +38,20 @@ class SQLAlchemyUserRepository(UserRepository):
             model = result.scalar_one_or_none()
             return UserMapper.to_domain(model) if model else None
 
-    async def find_all(self, skip: int = 0, limit: int = 20) -> list[User]:
-        result = await self._session.execute(
-            select(UserModel).offset(skip).limit(limit)
-        )
+    async def find_all(self, filters: UserFilterDTO | None = None, skip: int = 0, limit: int = 20) -> list[User]:
+        statement = select(UserModel)
+
+        if filters:
+            if filters.status:
+                statement = statement.where(UserModel.status == filters.status)
+            if filters.created_at:
+                statement = statement.where(UserModel.created_at >= filters.created_at)
+
+        statement = statement.order_by(UserModel.created_at.desc())
+
+        result = await self._session.execute(statement.offset(skip).limit(limit))
         models = result.scalars().all()
-        return [UserMapper.to_domain(m) for m in models]
+        return[UserMapper.to_domain(m) for m in models]
 
     async def update(self, user: User) -> User:
         result = await self._session.execute(

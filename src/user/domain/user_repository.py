@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.user.domain.user import User
-
+from src.user.application.ports.user_dtos import UserFilterDTO
 
 class UserRepository(ABC):
     """
@@ -25,7 +25,7 @@ class UserRepository(ABC):
         ...
 
     @abstractmethod
-    async def find_all(self, skip: int = 0, limit: int = 20) -> list[User]:
+    async def find_all(self, filters: UserFilterDTO | None = None, skip: int = 0, limit: int = 20) -> list[User]:
         """Devuelve una lista paginada de users."""
         ...
 

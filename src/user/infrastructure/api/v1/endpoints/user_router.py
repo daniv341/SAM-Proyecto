@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
@@ -8,7 +9,8 @@ from src.user.application.ports.user_dtos import (
     UserResponseDTO,
     UserListResponseDTO,
     LoginDTO,
-    TokenResponseDTO
+    TokenResponseDTO,
+    UserFilterDTO
 )
 from src.user.application.use_cases.create_user import CreateUserUseCase
 from src.user.application.use_cases.get_user import GetUserUseCase
@@ -24,6 +26,10 @@ from src.user.infrastructure.api.v1.dependencies import (
     get_login_use_case,
     get_logout_use_case
 )
+from src.user.domain.user import UserStatus
+
+# esta libreria hace que debas estar autenticado para acceder a un endpoint
+from src.shared.config.auth_dependencies import CurrentUser
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -76,8 +82,14 @@ async def list_users(
     use_case: Annotated[GetUserUseCase, Depends(get_get_user_use_case)],
     skip: int = 0,
     limit: int = 20,
+    status: UserStatus | None = None,
+    created_at: datetime | None = None,
 ) -> UserListResponseDTO:
-    return await use_case.execute_all(skip=skip, limit=limit)
+    filters = UserFilterDTO(
+        status=status,
+        created_at=created_at,
+    )
+    return await use_case.execute_all(filters, skip=skip, limit=limit)
 
 
 @router.get(
@@ -88,6 +100,7 @@ async def list_users(
 async def get_user(
     user_id: str,
     use_case: Annotated[GetUserUseCase, Depends(get_get_user_use_case)],
+    current_user: CurrentUser, # con esta linea se asegura que el usuario esté autenticado para poder acceder al endpoint
 ) -> UserResponseDTO:
     return await use_case.execute_by_id(user_id)
 

@@ -47,6 +47,8 @@ class SQLAlchemyWorkstationRepository(WorkstationRepository):
             if filters.created_at:
                 statement = statement.where(WorkstationModel.created_at >= filters.created_at)
 
+        statement = statement.order_by(WorkstationModel.created_at.desc())
+
         result = await self._session.execute(statement.offset(skip).limit(limit))
         models = result.scalars().all()
         return[WorkstationMapper.to_domain(m) for m in models]
@@ -80,14 +82,20 @@ class SQLAlchemyWorkstationRepository(WorkstationRepository):
             await self._session.flush()
 
     # añade una vulnerabilidad a un workstation.
-    async def add_vulnerability(self, workstation_id: str, vulnerability_id: str) -> None:
+    async def add_vulnerabilitie(self, workstation_id: str, vulnerability_id: str) -> None:
         association = VulnerabilityWorkstationModel(workstation_id=workstation_id, vulnerability_id=vulnerability_id)
 
         self._session.add(association)
         await self._session.commit()
 
+    #comprueba que la relacion entre una vulnerabilitie y un workstation no exista ya
+    async def vulnerabilitie_exists(self, workstation_id: str, vulnerability_id: str) -> bool:
+        result = await self._session.execute(                                   select(VulnerabilityWorkstationModel).where(VulnerabilityWorkstationModel.workstation_id == workstation_id, VulnerabilityWorkstationModel.vulnerability_id == vulnerability_id))
+
+        return result.scalar_one_or_none() is not None
+
     # elimina una vulnerabilidad de un workstation.
-    async def remove_vulnerability(self, workstation_id: str, vulnerability_id: str) -> None:
+    async def remove_vulnerabilitie(self, workstation_id: str, vulnerability_id: str) -> None:
         result = await self._session.execute(
             select(VulnerabilityWorkstationModel).where(
                 VulnerabilityWorkstationModel.workstation_id == workstation_id, VulnerabilityWorkstationModel.vulnerability_id == vulnerability_id))
