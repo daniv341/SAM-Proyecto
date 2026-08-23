@@ -5,7 +5,7 @@ from sqlalchemy import Column, DateTime
 
 from sqlmodel import SQLModel, Field
 
-from src.user.domain.user import UserStatus
+from src.user.domain.user import Role, UserStatus
 
 
 class UserModel(SQLModel, table=True):
@@ -22,6 +22,7 @@ class UserModel(SQLModel, table=True):
     date_of_birth: datetime = Field(
         sa_column=Column(DateTime(timezone=True), nullable=False)
     )
+    role: Role = Field(default=Role.USER)
     status: UserStatus = Field(default=UserStatus.ACTIVE)
     bio: Optional[str] = Field(default=None)
     image_url: Optional[str] = Field(default=None)

@@ -5,7 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.shared.config.security import decode_token
 from src.user.infrastructure.api.v1.dependencies import UserRepoDep
-from src.user.domain.user import User
+from src.user.domain.user import User, Role
 
 # esquema de seguridad para obtener el token de acceso de la cabecera Authorization
 bearer_scheme = HTTPBearer()
@@ -47,3 +47,19 @@ async def get_current_user(
 
 # CurrentUser es un alias para User que se obtiene del token y depende de get_current_user
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+async def require_admin(
+    current_user: CurrentUser,
+) -> User:
+
+    if current_user.role != Role.ADMIN:
+        raise HTTPException(
+            status_code=403,
+            detail="Administrator permissions required",
+        )
+
+    return current_user
+
+
+CurrentAdmin = Annotated[User, Depends(require_admin)]

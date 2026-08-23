@@ -15,7 +15,7 @@ from src.log.infrastructure.api.v1.dependencies import (
 from src.log.domain.log import AuditAction, EntityType
 
 # esta libreria hace que debas estar autenticado para acceder a un endpoint
-from src.shared.config.auth_dependencies import CurrentUser
+from src.shared.config.auth_dependencies import CurrentAdmin
 
 router = APIRouter(prefix="/logs", tags=["Logs"])
 
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/logs", tags=["Logs"])
 )
 async def list_logs(
     use_case: Annotated[GetLogUseCase, Depends(get_get_log_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
     skip: int = 0,
     limit: int = 20,
     action: AuditAction | None = None, # debes añadirlos al endpoint si quieres que salgan en Swagger
@@ -52,7 +52,7 @@ async def list_logs(
 async def get_log(
     log_id: str,
     use_case: Annotated[GetLogUseCase, Depends(get_get_log_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> LogResponseDTO:
     return await use_case.execute_by_id(log_id)
 

@@ -9,14 +9,9 @@ from src.main import app
 USER_IDS = [
 "01M0NVBADDP9X5086JTHSFYR5M",
 "01M0NVBB68WSZ3F28A8858NV9E",
-"01M0NVBBYGRM1K5PGER527TA7F",
 "01M0NVBCT3K26BRPDAA2CQZWP5",
 "01M0NVBDJ70JYB2GSSRJ4SN4VW",
-"01M0NVBEE5394C45A8X895SQ5X",
-"01M0NVBFDWQP1QNRAZRQ6F89DP",
-"01M0NVBGDS5YAE3G2VW6VS56WW",
 "01M0NVBHDXJH85SZTARW929F2G",
-"01M0NVBJ9ERNHS0V8QM41XW26C",
 ]
 
 def random_users_id() -> str:
@@ -72,7 +67,7 @@ class TestCreateWorkstation:
         assert "id" in data
 
     # prueba el endpoint de post sin los atributos opcionales
-    def test_create_workstation_without_optional_fields(self, auth_token,client):
+    def test_create_workstation_without_optional_fields(self, auth_token, client):
         payload = {
             "user": random_users_id(),
             "type": "DESKTOP",
@@ -189,10 +184,10 @@ class TestUpdateWorkstation:
         workstation_id = created_workstation["id"]
         original_updated_at = created_workstation["updated_at"]
         time.sleep(2)
-        client.patch(f"/api/v1/workstations/{workstation_id}", json={"description": "Nueva descripcion"}, headers={"Authorization": f"Bearer {auth_token}"})
+        response = client.patch(f"/api/v1/workstations/{workstation_id}", json={"description": "Nueva descripcion"}, headers={"Authorization": f"Bearer {auth_token}"})
+        assert response.status_code == 200
         response = client.get(f"/api/v1/workstations/{workstation_id}", headers={"Authorization": f"Bearer {auth_token}"})
         new_updated_at = response.json()["updated_at"]
-        # updated_at debe haber cambiado (o ser igual si es muy rápido — depende)
         assert new_updated_at > original_updated_at
 
     # prueba el endpoint de patch al actualizar a un status que no existe
@@ -228,4 +223,23 @@ class TestDeleteWorkstation:
         client.delete(f"/api/v1/workstations/{workstation_id}", headers={"Authorization": f"Bearer {auth_token}"})
         second_delete = client.delete(f"/api/v1/workstations/{workstation_id}", headers={"Authorization": f"Bearer {auth_token}"})
         assert second_delete.status_code == 404
+    
 
+class TestBusinessRules:
+    def test_verified_workstation_banned_by_user_banned(self, workstation_payload, auth_token, client):
+        response = client.post("/api/v1/workstations/", json=workstation_payload, headers={"Authorization": f"Bearer {auth_token}"})
+        assert response.status_code == 201
+        user_id = response.json()["user"]["id"]
+        update_payload = {
+            "status": "BANNED", 
+        }
+        response = client.patch(f"/api/v1/users/{user_id}", json=update_payload, headers={"Authorization": f"Bearer {auth_token}"})
+        data = response.json()
+        print(data)
+        assert data["status"] == "BANNED"
+        response = client.get(f"/api/v1/workstations/{user_id}/user", headers={"Authorization": f"Bearer {auth_token}"})
+        assert response.status_code == 200
+        fields = response.json()["workstations"]
+        assert len(fields) > 0
+        for field in fields:
+            assert field["status"] == "BANNED" 

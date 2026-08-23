@@ -24,14 +24,12 @@ class UpdateWorkstationUseCase:
         if not workstation:
             raise EntityNotFoundException("Workstation", workstation_id)
 
-        user = await self._repo_user.find_by_id(dto.user)
-        if not user:
-            raise EntityNotFoundException("User", dto.user)
-        
-        user = await _to_update_workstation_validator(workstation, self._repo_user)
-
         if dto.user is not None:
             workstation.user = dto.user
+            user = await self._repo_user.find_by_id(dto.user)
+            if not user:
+                raise EntityNotFoundException("User", dto.user)
+            user = await _to_update_workstation_validator(workstation, self._repo_user)
         if dto.description is not None:
             workstation.description = dto.description
         if dto.status is not None:

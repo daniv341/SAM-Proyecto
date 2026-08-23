@@ -29,9 +29,21 @@ from src.user.infrastructure.api.v1.dependencies import (
 from src.user.domain.user import UserStatus
 
 # esta libreria hace que debas estar autenticado para acceder a un endpoint
-from src.shared.config.auth_dependencies import CurrentUser
+from src.shared.config.auth_dependencies import CurrentUser, CurrentAdmin
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+
+@router.get(
+    "/MyUser",
+    response_model=UserResponseDTO,
+    summary="Obtener el user que realiza la peticion"
+)
+async def get_my_user(
+    use_case: Annotated[GetUserUseCase, Depends(get_get_user_use_case)],
+    current_user: CurrentUser
+):
+    return await use_case.execute_by_id(current_user.id)
 
 
 # AUTH
@@ -44,6 +56,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 async def register(
     dto: CreateUserDTO,
     use_case: Annotated[CreateUserUseCase, Depends(get_create_user_use_case)],
+    current_admin: CurrentAdmin,
 ) -> UserResponseDTO:
     return await use_case.execute(dto)
 
@@ -69,7 +82,7 @@ async def login(
 async def logout(
     token: str,
     use_case: Annotated[LogoutUserUseCase, Depends(get_logout_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> None:
     return await use_case.execute(token)
 
@@ -81,7 +94,7 @@ async def logout(
 )
 async def list_users(
     use_case: Annotated[GetUserUseCase, Depends(get_get_user_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
     skip: int = 0,
     limit: int = 20,
     status: UserStatus | None = None,
@@ -102,7 +115,7 @@ async def list_users(
 async def get_user(
     user_id: str,
     use_case: Annotated[GetUserUseCase, Depends(get_get_user_use_case)],
-    current_user: CurrentUser, # con esta linea se asegura que el usuario esté autenticado para poder acceder al endpoint
+    current_admin: CurrentAdmin, # con esta linea se asegura que el usuario esté autenticado para poder acceder al endpoint
 ) -> UserResponseDTO:
     return await use_case.execute_by_id(user_id)
 
@@ -116,7 +129,7 @@ async def update_user(
     user_id: str,
     dto: UpdateUserDTO,
     use_case: Annotated[UpdateUserUseCase, Depends(get_update_user_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> UserResponseDTO:
     return await use_case.execute(user_id, dto)
 
@@ -129,6 +142,6 @@ async def update_user(
 async def delete_user(
     user_id: str,
     use_case: Annotated[DeleteUserUseCase, Depends(get_delete_user_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> None:
     await use_case.execute(user_id)

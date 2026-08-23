@@ -31,9 +31,21 @@ from src.workstation.domain.workstation import WorkstationStatus, Type, Area
 from src.vulnerabilitie.application.ports.vulnerabilitie_dtos import VulnerabilitieResponseShortDTO
 
 # esta libreria hace que debas estar autenticado para acceder a un endpoint
-from src.shared.config.auth_dependencies import CurrentUser
+from src.shared.config.auth_dependencies import CurrentUser, CurrentAdmin
 
 router = APIRouter(prefix="/workstations", tags=["Workstations"])
+
+
+@router.get(
+    "/MyWorkstation",
+    response_model=WorkstationListResponseDTO,
+    summary="Obtener un workstation por User ID que realiza la peticion",
+)
+async def get_my_workstation(
+    use_case: Annotated[GetWorkstationUseCase, Depends(get_get_workstation_use_case)],
+    current_user: CurrentUser
+):
+    return await use_case.execute_by_user_id(current_user.id)
 
 
 @router.post(
@@ -45,7 +57,7 @@ router = APIRouter(prefix="/workstations", tags=["Workstations"])
 async def create_workstation(
     dto: CreateWorkstationDTO,
     use_case: Annotated[CreateWorkstationUseCase, Depends(get_create_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> WorkstationResponseDTO:
     return await use_case.execute(dto)
 
@@ -57,7 +69,7 @@ async def create_workstation(
 )
 async def list_workstations(
     use_case: Annotated[GetWorkstationUseCase, Depends(get_get_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
     skip: int = 0,
     limit: int = 20,
     user: str | None = None,
@@ -84,9 +96,22 @@ async def list_workstations(
 async def get_workstation(
     workstation_id: str,
     use_case: Annotated[GetWorkstationUseCase, Depends(get_get_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> WorkstationResponseDTO:
     return await use_case.execute_by_id(workstation_id)
+
+
+@router.get(
+    "/{user_id}/user",
+    response_model=WorkstationListResponseDTO,
+    summary="Obtener un workstation por User ID",
+)
+async def get_workstation_by_user_id(
+    user_id: str,
+    use_case: Annotated[GetWorkstationUseCase, Depends(get_get_workstation_use_case)],
+    current_admin: CurrentAdmin,
+) -> WorkstationListResponseDTO:
+    return await use_case.execute_by_user_id(user_id)
 
 
 @router.patch(
@@ -98,7 +123,7 @@ async def update_workstation(
     workstation_id: str,
     dto: UpdateWorkstationDTO,
     use_case: Annotated[UpdateWorkstationUseCase, Depends(get_update_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> WorkstationResponseDTO:
     return await use_case.execute(workstation_id, dto)
 
@@ -111,7 +136,7 @@ async def update_workstation(
 async def delete_workstation(
     workstation_id: str,
     use_case: Annotated[DeleteWorkstationUseCase, Depends(get_delete_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> None:
     await use_case.execute(workstation_id)
 
@@ -125,7 +150,7 @@ async def add_vulnerabilitie_to_workstation(
     workstation_id: str,
     vulnerabilitie_id: str,
     use_case: Annotated[AddvulnerabilitieToWorkstationUseCase, Depends(get_add_vulnerabilitie_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> None:
     await use_case.execute(workstation_id=workstation_id, vulnerabilitie_id=vulnerabilitie_id)
 
@@ -139,7 +164,7 @@ async def remove_vulnerabilitie_from_workstation(
     workstation_id: str,
     vulnerabilitie_id: str,
     use_case: Annotated[RemovevulnerabilitieFromWorkstationUseCase, Depends(get_remove_vulnerabilitie_from_workstation_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ) -> None:
     await use_case.execute(workstation_id=workstation_id, vulnerabilitie_id=vulnerabilitie_id)
 
@@ -152,6 +177,6 @@ async def remove_vulnerabilitie_from_workstation(
 async def get_workstation_vulnerabilities(
     workstation_id: str,
     use_case: Annotated[GetWorkstationVulnerabilitiesUseCase, Depends(get_get_workstation_vulnerabilities_use_case)],
-    current_user: CurrentUser,
+    current_admin: CurrentAdmin,
 ):
     return await use_case.execute(workstation_id)

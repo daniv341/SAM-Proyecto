@@ -6,6 +6,9 @@ from src.shared.exceptions.domain_exceptions import InvalidValueException
 
 from src.user.domain.user_validate import Name, Email, Password
 
+class Role(str, Enum):
+    USER = "USER"
+    ADMIN = "ADMIN"
 
 class UserStatus(str, Enum):
     ACTIVE = "ACTIVE"
@@ -24,7 +27,8 @@ class User:
     name: str
     email: str
     password: str
-    date_of_birth: datetime
+    role: Role = Role.USER
+    date_of_birth: datetime | None = None
     status: UserStatus = UserStatus.ACTIVE
     bio: str | None = None
     image_url: str | None = None

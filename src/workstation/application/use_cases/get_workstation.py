@@ -50,6 +50,33 @@ class GetWorkstationUseCase:
             updated_at=workstation.updated_at,
         )
 
+
+    async def execute_by_user_id(self, user_id: str) -> WorkstationListResponseDTO:
+        workstations = await self._repo.find_by_user_id(user_id)
+
+        workstation_dtos = [
+            await _to_workstation_response(w, self._repo_user)
+            for w in workstations
+        ]
+
+        log = Log(
+            id=str(ULID()),
+            action="GET",
+            entity_type="WORKSTATION",
+            entity_id="null",
+            description=f"Get All ejecuted"
+        )
+        # llamas a save del repositorio de log
+        await self._repo_log.save(log)
+
+        return WorkstationListResponseDTO(
+            workstations=workstation_dtos,
+            total=len(workstation_dtos),
+            skip=0,
+            limit=len(workstation_dtos)
+        )
+
+
     async def execute_all(self, filters: WorkstationFilterDTO | None = None, skip: int = 0, limit: int = 20) -> WorkstationListResponseDTO:
         workstations = await self._repo.find_all(filters, skip=skip, limit=limit)
 

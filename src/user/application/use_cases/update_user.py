@@ -23,6 +23,8 @@ class UpdateUserUseCase:
         if not user:
             raise EntityNotFoundException("User", user_id)
 
+        old_status = user.status
+
         if dto.password is not None:
             user.password = hash_password(dto.password)
         if dto.status is not None:
@@ -47,7 +49,7 @@ class UpdateUserUseCase:
         # llamas a save del repositorio de log
         await self._repo_log.save(log) 
 
-        if dto.status != updated.status and updated.status in (UserStatus.BANNED, UserStatus.SUSPENDED):
+        if old_status != updated.status and updated.status in (UserStatus.BANNED, UserStatus.SUSPENDED):
             workstations = await self._repo_workstation.find_by_user_id(updated.id)
 
             for workstation in workstations:
