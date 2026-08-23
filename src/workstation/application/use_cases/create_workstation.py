@@ -1,11 +1,12 @@
 from ulid import ULID
+from src.shared.exceptions.domain_exceptions import DomainException
 
 from src.workstation.application.ports.workstation_dtos import CreateWorkstationDTO, WorkstationResponseDTO
 from src.workstation.domain.workstation import Workstation
 from src.workstation.domain.workstation_repository import WorkstationRepository
 
+from src.user.domain.user import UserStatus
 from src.user.domain.user_repository import UserRepository
-
 from src.user.application.ports.user_dtos import UserResponseShort
 
 from src.workstation.application.services.workstation_validator import _to_workstation_validator
@@ -22,6 +23,9 @@ class CreateWorkstationUseCase:
     async def execute(self, dto: CreateWorkstationDTO) -> WorkstationResponseDTO:
 
         user = await _to_workstation_validator(dto, self._repo_user)
+
+        if user.status != UserStatus.ACTIVE:
+            raise DomainException("Un User que no este ACTIVE no puede ")
 
         workstation = Workstation(
             id=str(ULID()),

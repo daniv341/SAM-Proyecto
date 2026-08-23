@@ -7,23 +7,23 @@ from src.vulnerabilitie.domain.vulnerabilitie_repository import VulnerabilitieRe
 from src.log.domain.log import Log
 from src.log.domain.log_repository import LogRepository
 
-class AddVulnerabilityToWorkstationUseCase:
+class AddvulnerabilitieToWorkstationUseCase:
 
     def __init__(self, workstation_repository: WorkstationRepository, vulnerabilitie_repository: VulnerabilitieRepository, log_repository: LogRepository):
         self._repo = workstation_repository
         self._repo_vulnerabilitie = vulnerabilitie_repository
         self._repo_log = log_repository
 
-    async def execute(self, workstation_id: str, vulnerability_id: str) -> None:
+    async def execute(self, workstation_id: str, vulnerabilitie_id: str) -> None:
         workstation = await self._repo.find_by_id(workstation_id)
         if not workstation:
             raise EntityNotFoundException("Workstation", workstation_id)
 
-        vulnerability = await self._repo_vulnerabilitie.find_by_id(vulnerability_id)
-        if not vulnerability:
-            raise EntityNotFoundException("Vulnerability", vulnerability_id)
+        vulnerabilitie = await self._repo_vulnerabilitie.find_by_id(vulnerabilitie_id)
+        if not vulnerabilitie:
+            raise EntityNotFoundException("vulnerabilitie", vulnerabilitie_id)
 
-        exists = await self._repo.vulnerabilitie_exists(workstation_id, vulnerability_id)
+        exists = await self._repo.vulnerabilitie_exists(workstation_id, vulnerabilitie_id)
         if exists:
             raise InvalidValueException("La workstation ingresada ya está asociada a esta vulnerabilitie")
 
@@ -31,14 +31,14 @@ class AddVulnerabilityToWorkstationUseCase:
 
         await self._repo.update(workstation)
 
-        await self._repo.add_vulnerabilitie(workstation_id, vulnerability_id)
+        await self._repo.add_vulnerabilitie(workstation_id, vulnerabilitie_id)
 
         log = Log(
             id=str(ULID()),
             action="ALERT",
             entity_type="WORKSTATION",
             entity_id=workstation.id,
-            description=f"Workstation {workstation.id} from User {workstation.user} was banned from the system due to the threat {vulnerability.cve}"
+            description=f"Workstation {workstation.id} from User {workstation.user} was banned from the system due to the threat {vulnerabilitie.cve}"
         )
         # llamas a save del repositorio de log
         await self._repo_log.save(log)

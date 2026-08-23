@@ -23,6 +23,9 @@ from src.vulnerabilitie.infrastructure.api.v1.dependencies import (
 
 from src.workstation.application.ports.workstation_dtos import WorkstationResponseShortDTO
 
+# esta libreria hace que debas estar autenticado para acceder a un endpoint
+from src.shared.config.auth_dependencies import CurrentUser
+
 router = APIRouter(prefix="/vulnerabilities", tags=["Vulnerabilities"])
 
 
@@ -35,6 +38,7 @@ router = APIRouter(prefix="/vulnerabilities", tags=["Vulnerabilities"])
 async def create_vulnerabilitie(
     dto: CreateVulnerabilitieDTO,
     use_case: Annotated[CreateVulnerabilitieUseCase, Depends(get_create_vulnerabilitie_use_case)],
+    current_user: CurrentUser,
 ) -> VulnerabilitieResponseDTO:
     return await use_case.execute(dto)
 
@@ -46,6 +50,7 @@ async def create_vulnerabilitie(
 )
 async def list_vulnerabilities(
     use_case: Annotated[GetVulnerabilitieUseCase, Depends(get_get_vulnerabilitie_use_case)],
+    current_user: CurrentUser,
     skip: int = 0,
     limit: int = 20,
 ) -> VulnerabilitieListResponseDTO:
@@ -60,6 +65,7 @@ async def list_vulnerabilities(
 async def get_vulnerabilitie(
     vulnerabilitie_id: str,
     use_case: Annotated[GetVulnerabilitieUseCase, Depends(get_get_vulnerabilitie_use_case)],
+    current_user: CurrentUser,
 ) -> VulnerabilitieResponseDTO:
     return await use_case.execute_by_id(vulnerabilitie_id)
 
@@ -73,6 +79,7 @@ async def update_vulnerabilitie(
     vulnerabilitie_id: str,
     dto: UpdateVulnerabilitieDTO,
     use_case: Annotated[UpdateVulnerabilitieUseCase, Depends(get_update_vulnerabilitie_use_case)],
+    current_user: CurrentUser,
 ) -> VulnerabilitieResponseDTO:
     return await use_case.execute(vulnerabilitie_id, dto)
 
@@ -85,6 +92,7 @@ async def update_vulnerabilitie(
 async def delete_vulnerabilitie(
     vulnerabilitie_id: str,
     use_case: Annotated[DeleteVulnerabilitieUseCase, Depends(get_delete_vulnerabilitie_use_case)],
+    current_user: CurrentUser,
 ) -> None:
     await use_case.execute(vulnerabilitie_id)
 
@@ -97,5 +105,6 @@ async def delete_vulnerabilitie(
 async def get_vulnerabilitie_workstations(
     vulnerabilitie_id: str,
     use_case: Annotated[GetVulnerabilitieWorkstationsUseCase, Depends(get_get_vulnerabilitie_workstations_use_case)],
+    current_user: CurrentUser,
 ):
     return await use_case.execute(vulnerabilitie_id)

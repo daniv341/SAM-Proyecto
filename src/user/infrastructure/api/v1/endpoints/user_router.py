@@ -68,7 +68,8 @@ async def login(
 )
 async def logout(
     token: str,
-    use_case: Annotated[LogoutUserUseCase, Depends(get_logout_use_case)]
+    use_case: Annotated[LogoutUserUseCase, Depends(get_logout_use_case)],
+    current_user: CurrentUser,
 ) -> None:
     return await use_case.execute(token)
 
@@ -80,6 +81,7 @@ async def logout(
 )
 async def list_users(
     use_case: Annotated[GetUserUseCase, Depends(get_get_user_use_case)],
+    current_user: CurrentUser,
     skip: int = 0,
     limit: int = 20,
     status: UserStatus | None = None,
@@ -114,6 +116,7 @@ async def update_user(
     user_id: str,
     dto: UpdateUserDTO,
     use_case: Annotated[UpdateUserUseCase, Depends(get_update_user_use_case)],
+    current_user: CurrentUser,
 ) -> UserResponseDTO:
     return await use_case.execute(user_id, dto)
 
@@ -126,5 +129,6 @@ async def update_user(
 async def delete_user(
     user_id: str,
     use_case: Annotated[DeleteUserUseCase, Depends(get_delete_user_use_case)],
+    current_user: CurrentUser,
 ) -> None:
     await use_case.execute(user_id)

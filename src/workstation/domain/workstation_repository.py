@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from src.workstation.domain.workstation import Workstation
 from src.workstation.application.ports.workstation_dtos import WorkstationFilterDTO
 
+from src.user.domain.user import User
+
 class WorkstationRepository(ABC):
     """
     Puerto de salida (driven port).
@@ -17,6 +19,11 @@ class WorkstationRepository(ABC):
     @abstractmethod
     async def find_by_id(self, workstation_id: str) -> Workstation | None:
         """Busca un workstation por su ID."""
+        ...
+
+    @abstractmethod
+    async def find_by_user_id(self, user_id: str) -> User | None:
+        """Busca un workstation por su ID de User."""
         ...
 
     @abstractmethod
@@ -36,16 +43,16 @@ class WorkstationRepository(ABC):
 
 # metodos para manejar la relacion many to many entre workstation y vulnerabilidades
     @abstractmethod
-    async def add_vulnerabilitie(self, workstation_id: str, vulnerability_id: str) -> None:
+    async def add_vulnerabilitie(self, workstation_id: str, vulnerabilitie_id: str) -> None:
         """Añade una vulnerabilidad a un workstation."""
         ...
 
     @abstractmethod
-    async def vulnerabilitie_exists(self, workstation_id: str, vulnerability_id: str) -> bool:
+    async def vulnerabilitie_exists(self, workstation_id: str, vulnerabilitie_id: str) -> bool:
         """Comprueba que la relacion entre una Vulnerabilitie y un Workstation no exista ya"""
 
     @abstractmethod
-    async def remove_vulnerabilitie(self, workstation_id: str, vulnerability_id: str) -> None:
+    async def remove_vulnerabilitie(self, workstation_id: str, vulnerabilitie_id: str) -> None:
         """Elimina una vulnerabilidad de un workstation."""
         ...
 

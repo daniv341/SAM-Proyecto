@@ -14,8 +14,8 @@ from src.workstation.application.use_cases.create_workstation import CreateWorks
 from src.workstation.application.use_cases.get_workstation import GetWorkstationUseCase
 from src.workstation.application.use_cases.update_workstation import UpdateWorkstationUseCase
 from src.workstation.application.use_cases.delete_workstation import DeleteWorkstationUseCase
-from src.workstation.application.use_cases.add_vulnerability_to_workstation import AddVulnerabilityToWorkstationUseCase
-from src.workstation.application.use_cases.remove_vulnerabiltie_from_workstation import RemoveVulnerabilityFromWorkstationUseCase
+from src.workstation.application.use_cases.add_vulnerabilitie_to_workstation import AddvulnerabilitieToWorkstationUseCase
+from src.workstation.application.use_cases.remove_vulnerabiltie_from_workstation import RemovevulnerabilitieFromWorkstationUseCase
 from src.workstation.application.use_cases.get_workstation_vulnerabilitie import GetWorkstationVulnerabilitiesUseCase
 from src.workstation.infrastructure.api.v1.dependencies import (
     get_create_workstation_use_case,
@@ -30,6 +30,9 @@ from src.workstation.domain.workstation import WorkstationStatus, Type, Area
 
 from src.vulnerabilitie.application.ports.vulnerabilitie_dtos import VulnerabilitieResponseShortDTO
 
+# esta libreria hace que debas estar autenticado para acceder a un endpoint
+from src.shared.config.auth_dependencies import CurrentUser
+
 router = APIRouter(prefix="/workstations", tags=["Workstations"])
 
 
@@ -42,6 +45,7 @@ router = APIRouter(prefix="/workstations", tags=["Workstations"])
 async def create_workstation(
     dto: CreateWorkstationDTO,
     use_case: Annotated[CreateWorkstationUseCase, Depends(get_create_workstation_use_case)],
+    current_user: CurrentUser,
 ) -> WorkstationResponseDTO:
     return await use_case.execute(dto)
 
@@ -53,6 +57,7 @@ async def create_workstation(
 )
 async def list_workstations(
     use_case: Annotated[GetWorkstationUseCase, Depends(get_get_workstation_use_case)],
+    current_user: CurrentUser,
     skip: int = 0,
     limit: int = 20,
     user: str | None = None,
@@ -79,6 +84,7 @@ async def list_workstations(
 async def get_workstation(
     workstation_id: str,
     use_case: Annotated[GetWorkstationUseCase, Depends(get_get_workstation_use_case)],
+    current_user: CurrentUser,
 ) -> WorkstationResponseDTO:
     return await use_case.execute_by_id(workstation_id)
 
@@ -92,6 +98,7 @@ async def update_workstation(
     workstation_id: str,
     dto: UpdateWorkstationDTO,
     use_case: Annotated[UpdateWorkstationUseCase, Depends(get_update_workstation_use_case)],
+    current_user: CurrentUser,
 ) -> WorkstationResponseDTO:
     return await use_case.execute(workstation_id, dto)
 
@@ -104,34 +111,37 @@ async def update_workstation(
 async def delete_workstation(
     workstation_id: str,
     use_case: Annotated[DeleteWorkstationUseCase, Depends(get_delete_workstation_use_case)],
+    current_user: CurrentUser,
 ) -> None:
     await use_case.execute(workstation_id)
 
 
 @router.post(
-    "/{workstation_id}/vulnerabilities/{vulnerability_id}",
+    "/{workstation_id}/vulnerabilities/{vulnerabilitie_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Añadir una vulnerabilitie a un workstation",
 )
-async def add_vulnerability_to_workstation(
+async def add_vulnerabilitie_to_workstation(
     workstation_id: str,
-    vulnerability_id: str,
-    use_case: Annotated[AddVulnerabilityToWorkstationUseCase, Depends(get_add_vulnerabilitie_workstation_use_case)],
+    vulnerabilitie_id: str,
+    use_case: Annotated[AddvulnerabilitieToWorkstationUseCase, Depends(get_add_vulnerabilitie_workstation_use_case)],
+    current_user: CurrentUser,
 ) -> None:
-    await use_case.execute(workstation_id=workstation_id, vulnerability_id=vulnerability_id)
+    await use_case.execute(workstation_id=workstation_id, vulnerabilitie_id=vulnerabilitie_id)
 
 
 @router.delete(
-    "/{workstation_id}/vulnerabilities/{vulnerability_id}",
+    "/{workstation_id}/vulnerabilities/{vulnerabilitie_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Eliminar una vulnerabilitie de un workstation",
 )
-async def remove_vulnerability_from_workstation(
+async def remove_vulnerabilitie_from_workstation(
     workstation_id: str,
-    vulnerability_id: str,
-    use_case: Annotated[RemoveVulnerabilityFromWorkstationUseCase, Depends(get_remove_vulnerabilitie_from_workstation_use_case)],
+    vulnerabilitie_id: str,
+    use_case: Annotated[RemovevulnerabilitieFromWorkstationUseCase, Depends(get_remove_vulnerabilitie_from_workstation_use_case)],
+    current_user: CurrentUser,
 ) -> None:
-    await use_case.execute(workstation_id=workstation_id, vulnerability_id=vulnerability_id)
+    await use_case.execute(workstation_id=workstation_id, vulnerabilitie_id=vulnerabilitie_id)
 
 
 @router.get(
@@ -142,5 +152,6 @@ async def remove_vulnerability_from_workstation(
 async def get_workstation_vulnerabilities(
     workstation_id: str,
     use_case: Annotated[GetWorkstationVulnerabilitiesUseCase, Depends(get_get_workstation_vulnerabilities_use_case)],
+    current_user: CurrentUser,
 ):
     return await use_case.execute(workstation_id)

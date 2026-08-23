@@ -98,6 +98,7 @@ coverage.xml
 # VS Code
 # ==========================
 .vscode/
+create_object.py
 
 # ==========================
 # Archivos de configuración local

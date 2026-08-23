@@ -5,7 +5,7 @@ from src.vulnerabilitie.domain.vulnerabilitie import Vulnerabilitie
 from src.vulnerabilitie.domain.vulnerabilitie_repository import VulnerabilitieRepository
 from src.vulnerabilitie.infrastructure.repositories.vulnerabilitie_mapper import VulnerabilitieMapper
 from src.vulnerabilitie.infrastructure.repositories.vulnerabilitie_model import VulnerabilitieModel
-from src.workstation.infrastructure.repositories.vulnerabilitie_workstation_model import VulnerabilityWorkstationModel
+from src.workstation.infrastructure.repositories.vulnerabilitie_workstation_model import VulnerabilitieWorkstationModel
 
 
 class SQLAlchemyVulnerabilitieRepository(VulnerabilitieRepository):
@@ -64,8 +64,8 @@ class SQLAlchemyVulnerabilitieRepository(VulnerabilitieRepository):
             await self._session.flush()
 
     # Devuelve una lista de workstations asociadas a una vulnerabilitie.
-    async def find_workstations(self, vulnerability_id: str) -> list[str]:
+    async def find_workstations(self, vulnerabilitie_id: str) -> list[str]:
         result = await self._session.execute(
-            select(VulnerabilityWorkstationModel.workstation_id).where(VulnerabilityWorkstationModel.vulnerability_id == vulnerability_id))
+            select(VulnerabilitieWorkstationModel.workstation_id).where(VulnerabilitieWorkstationModel.vulnerabilitie_id == vulnerabilitie_id))
 
         return list(result.scalars().all())

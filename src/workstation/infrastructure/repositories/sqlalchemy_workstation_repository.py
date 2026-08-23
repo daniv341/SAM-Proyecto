@@ -5,7 +5,7 @@ from src.workstation.domain.workstation import Workstation
 from src.workstation.domain.workstation_repository import WorkstationRepository
 from src.workstation.infrastructure.repositories.workstation_mapper import WorkstationMapper
 from src.workstation.infrastructure.repositories.workstation_model import WorkstationModel
-from src.workstation.infrastructure.repositories.vulnerabilitie_workstation_model import VulnerabilityWorkstationModel
+from src.workstation.infrastructure.repositories.vulnerabilitie_workstation_model import VulnerabilitieWorkstationModel
 
 from src.workstation.application.ports.workstation_dtos import WorkstationFilterDTO
 
@@ -31,6 +31,12 @@ class SQLAlchemyWorkstationRepository(WorkstationRepository):
         )
         model = result.scalar_one_or_none()
         return WorkstationMapper.to_domain(model) if model else None
+
+    async def find_by_user_id(self, user_id: str) -> list[Workstation]:
+        result = await self._session.execute(
+            select(WorkstationModel).where(WorkstationModel.user == user_id))
+        models = result.scalars().all()
+        return [WorkstationMapper.to_domain(m) for m in models]
 
     async def find_all(self, filters: WorkstationFilterDTO | None = None, skip: int = 0, limit: int = 20) -> list[Workstation]:
         statement = select(WorkstationModel)
@@ -82,23 +88,23 @@ class SQLAlchemyWorkstationRepository(WorkstationRepository):
             await self._session.flush()
 
     # añade una vulnerabilidad a un workstation.
-    async def add_vulnerabilitie(self, workstation_id: str, vulnerability_id: str) -> None:
-        association = VulnerabilityWorkstationModel(workstation_id=workstation_id, vulnerability_id=vulnerability_id)
+    async def add_vulnerabilitie(self, workstation_id: str, vulnerabilitie_id: str) -> None:
+        association = VulnerabilitieWorkstationModel(workstation_id=workstation_id, vulnerabilitie_id=vulnerabilitie_id)
 
         self._session.add(association)
         await self._session.commit()
 
     #comprueba que la relacion entre una vulnerabilitie y un workstation no exista ya
-    async def vulnerabilitie_exists(self, workstation_id: str, vulnerability_id: str) -> bool:
-        result = await self._session.execute(                                   select(VulnerabilityWorkstationModel).where(VulnerabilityWorkstationModel.workstation_id == workstation_id, VulnerabilityWorkstationModel.vulnerability_id == vulnerability_id))
+    async def vulnerabilitie_exists(self, workstation_id: str, vulnerabilitie_id: str) -> bool:
+        result = await self._session.execute(                                   select(VulnerabilitieWorkstationModel).where(VulnerabilitieWorkstationModel.workstation_id == workstation_id, VulnerabilitieWorkstationModel.vulnerabilitie_id == vulnerabilitie_id))
 
         return result.scalar_one_or_none() is not None
 
     # elimina una vulnerabilidad de un workstation.
-    async def remove_vulnerabilitie(self, workstation_id: str, vulnerability_id: str) -> None:
+    async def remove_vulnerabilitie(self, workstation_id: str, vulnerabilitie_id: str) -> None:
         result = await self._session.execute(
-            select(VulnerabilityWorkstationModel).where(
-                VulnerabilityWorkstationModel.workstation_id == workstation_id, VulnerabilityWorkstationModel.vulnerability_id == vulnerability_id))
+            select(VulnerabilitieWorkstationModel).where(
+                VulnerabilitieWorkstationModel.workstation_id == workstation_id, VulnerabilitieWorkstationModel.vulnerabilitie_id == vulnerabilitie_id))
 
         association = result.scalar_one_or_none()
 
@@ -109,7 +115,7 @@ class SQLAlchemyWorkstationRepository(WorkstationRepository):
     # devuelve una lista de vulnerabilities asociadas a un workstation.
     async def find_vulnerabilities(self, workstation_id: str) -> list[str]: 
         result = await self._session.execute(
-            select(VulnerabilityWorkstationModel.vulnerability_id).where(
-            VulnerabilityWorkstationModel.workstation_id == workstation_id))
+            select(VulnerabilitieWorkstationModel.vulnerabilitie_id).where(
+            VulnerabilitieWorkstationModel.workstation_id == workstation_id))
 
         return list(result.scalars().all())

@@ -13,8 +13,8 @@ from src.workstation.application.use_cases.create_workstation import CreateWorks
 from src.workstation.application.use_cases.get_workstation import GetWorkstationUseCase
 from src.workstation.application.use_cases.update_workstation import UpdateWorkstationUseCase
 from src.workstation.application.use_cases.delete_workstation import DeleteWorkstationUseCase
-from src.workstation.application.use_cases.add_vulnerability_to_workstation import AddVulnerabilityToWorkstationUseCase
-from src.workstation.application.use_cases.remove_vulnerabiltie_from_workstation import RemoveVulnerabilityFromWorkstationUseCase
+from src.workstation.application.use_cases.add_vulnerabilitie_to_workstation import AddvulnerabilitieToWorkstationUseCase
+from src.workstation.application.use_cases.remove_vulnerabiltie_from_workstation import RemovevulnerabilitieFromWorkstationUseCase
 from src.workstation.application.use_cases.get_workstation_vulnerabilitie import GetWorkstationVulnerabilitiesUseCase
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
@@ -54,11 +54,11 @@ def get_update_workstation_use_case(repo: WorkstationRepoDep, repo_user: UserRep
 def get_delete_workstation_use_case(repo: WorkstationRepoDep, repo_log: LogRepoDep) -> DeleteWorkstationUseCase:
     return DeleteWorkstationUseCase(repo, repo_log)
 
-def get_add_vulnerabilitie_workstation_use_case(repo: WorkstationRepoDep, repo_vulnerabilitie: VulnerabilitieRepoDep, repo_log: LogRepoDep) -> AddVulnerabilityToWorkstationUseCase:
-    return AddVulnerabilityToWorkstationUseCase(repo, repo_vulnerabilitie, repo_log)
+def get_add_vulnerabilitie_workstation_use_case(repo: WorkstationRepoDep, repo_vulnerabilitie: VulnerabilitieRepoDep, repo_log: LogRepoDep) -> AddvulnerabilitieToWorkstationUseCase:
+    return AddvulnerabilitieToWorkstationUseCase(repo, repo_vulnerabilitie, repo_log)
 
-def get_remove_vulnerabilitie_from_workstation_use_case(repo: WorkstationRepoDep, repo_vulnerabilitie: VulnerabilitieRepoDep, repo_log: LogRepoDep) -> RemoveVulnerabilityFromWorkstationUseCase:
-    return RemoveVulnerabilityFromWorkstationUseCase(repo, repo_vulnerabilitie, repo_log)
+def get_remove_vulnerabilitie_from_workstation_use_case(repo: WorkstationRepoDep, repo_vulnerabilitie: VulnerabilitieRepoDep, repo_log: LogRepoDep) -> RemovevulnerabilitieFromWorkstationUseCase:
+    return RemovevulnerabilitieFromWorkstationUseCase(repo, repo_vulnerabilitie, repo_log)
 
 def get_get_workstation_vulnerabilities_use_case(repo: WorkstationRepoDep, repo_vulnerabilitie: VulnerabilitieRepoDep, repo_log: LogRepoDep) -> GetWorkstationVulnerabilitiesUseCase:
     return GetWorkstationVulnerabilitiesUseCase(repo, repo_vulnerabilitie, repo_log)

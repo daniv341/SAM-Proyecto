@@ -165,8 +165,8 @@ class TestDeleteVulnerabilitie:
     # prueba el endpoint de delete 
     def test_delete_vulnerabilitie_by_id_success(self, vulnerabilitie_payload, client):
         # crear vulnerabilitie exclusivo para este test
-        create_resp = client.post("/api/v1/vulnerabilities/", json=vulnerabilitie_payload)
-        vulnerabilitie_id = create_resp.json()["id"]
+        response = client.post("/api/v1/vulnerabilities/", json=vulnerabilitie_payload)
+        vulnerabilitie_id = response.json()["id"]
 
         # eliminarlo segun el id
         delete_resp = client.delete(f"/api/v1/vulnerabilities/{vulnerabilitie_id}")
@@ -183,8 +183,8 @@ class TestDeleteVulnerabilitie:
 
     # prueba el endpoint de delete 2 veces para ver si se elimino a la primera, si sale a la segunda tambien esta mal
     def test_delete_vulnerabilitie_by_id_idempotent(self, vulnerabilitie_payload, client):
-        create_resp = client.post("/api/v1/vulnerabilities/", json=vulnerabilitie_payload)
-        vulnerabilitie_id = create_resp.json()["id"]
+        response = client.post("/api/v1/vulnerabilities/", json=vulnerabilitie_payload)
+        vulnerabilitie_id = response.json()["id"]
         client.delete(f"/api/v1/vulnerabilities/{vulnerabilitie_id}")
         second_delete = client.delete(f"/api/v1/vulnerabilities/{vulnerabilitie_id}")
         assert second_delete.status_code == 404
