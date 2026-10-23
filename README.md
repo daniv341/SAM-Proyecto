@@ -300,12 +300,4 @@ Con cobertura:
 pytest --cov=src --cov-report=term-missing
 ```
 
-## Buenas prácticas recomendadas
-
-- No commitear archivos `.env` con datos reales
-- Usar contraseñas fuertes y claves secretas distintas por entorno
-- En producción, ajustar CORS y activar configuración segura
-- Mantener las migraciones con Alembic como fuente de verdad del esquema
-- Usar roles y permisos de forma explícita para cada endpoint
-
 El proyecto está diseñado para ser una API de gestión de activos y vulnerabilidades con un enfoque profesional, modular y escalable.
